@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards, UsePipes, ValidationPipe } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Query, UseGuards, UsePipes, ValidationPipe, Logger } from '@nestjs/common';
 import { Task } from './task.entity';
 import { TasksService } from './tasks.service';
 import { CreateTaskDto } from './dto/create-task.dto';
@@ -14,6 +14,9 @@ import { GetUser } from 'src/auth/get-user.decorator';
 @Controller('tasks')
 @UseGuards(AuthGuard())
 export class TasksController {
+
+    private logger = new Logger('TaskController');
+
     constructor(private tasksService: TasksService) { }
 
     @Get()
@@ -21,6 +24,7 @@ export class TasksController {
         @Query(ValidationPipe) filterDto: GetTasksFilterDto,
         @GetUser() user: User,
         ) :Promise<Task[]> {
+            this.logger.verbose(`User "${user.username} retrieving all task. Filters: ${JSON.stringify(filterDto)}`)
         return this.tasksService.getTasks(filterDto, user);
     }
 
@@ -40,6 +44,7 @@ export class TasksController {
         @Body() createTaskDto: CreateTaskDto,
         @GetUser() user: User,
         ) : Promise<Task> {
+        this.logger.verbose(`User "${user.username} is creating a task: ${JSON.stringify(createTaskDto)}`)
         return this.tasksService.createTask(createTaskDto, user);
     }
 

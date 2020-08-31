@@ -7,7 +7,10 @@ async function bootstrap() {
   const logger = new Logger('bootstrap');
   const app = await NestFactory.create(AppModule);
 
-  //NODE ENV
+  if(process.env.NODE_ENV === 'development'){
+    app.enableCors();
+  }
+  
 
   const serverConfig = config.get('server');
   console.log(serverConfig.port);
